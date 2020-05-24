@@ -56,9 +56,21 @@ if [ ! -z "$2" ]; then
 	echo ""
 	rm -f $FILE_MEMBER_LIST
 	rm -f $FILE_EXTRA_COMMAS_REMOVED
-	echo "Copy email addresses from $FILE_EMAIL_ADDRESSES to clipboard."
-	echo "  On macOS, cat welcome-mail-list.txt | pbcopy"
-	echo "Send welcome email."
+	os_platform=$(uname)
+	echo "Platform: ${os_platform}."
+	if [ "${os_platform}" = "Darwin" ]; then
+		echo "On macOS put addresses in clipboard using pbcopy."
+		cat $FILE_EMAIL_ADDRESSES | pbcopy
+	elif [ "${os_platform}" = "Linux" ]; then
+		echo "On Linux put addresses in clipboard using xclip."
+		cat $FILE_EMAIL_ADDRESSES | xclip -sel clip
+	else
+		echo "Unknown platform - likely Windows."
+	fi
+	cat $FILE_EMAIL_ADDRESSES
+	echo "If email above addresses not in clipboard, manually copy them now."
+	echo "They can also be found in ${FILE_EMAIL_ADDRESSES}."
+	echo "Paste them into the .bcc filed and send welcome email."
 	wait_for_input
 	rm -f $FILE_EMAIL_ADDRESSES
 	rm member-list-2-bulk-upload.awk
